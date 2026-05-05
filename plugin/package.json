@@ -1,0 +1,24 @@
+{
+  "name": "obsync-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs production",
+    "dev": "node esbuild.config.mjs",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@codemirror/state": "6.5.0",
+    "@codemirror/view": "6.38.6",
+    "obsidian": "^1.5.12",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "typescript": "^5.5.4",
+    "jsdom": "^24.0.0",
+    "vitest": "^2.1.9"
+  }
+}

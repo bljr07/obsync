@@ -1,0 +1,9 @@
+{
+  "id": "obsync",
+  "name": "Obsync",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Self-hosted Obsidian sync with presence and locking.",
+  "author": "Obsync",
+  "isDesktopOnly": false
+}
