@@ -8,9 +8,9 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/index.js",
     "start:docker": "npm run db:push && node dist/index.js",
-    "test": "npm run db:push && vitest run",
-    "test:watch": "npm run db:push && vitest",
-    "test:features": "npm run db:push && vitest run tests/features",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:features": "vitest run tests/features",
     "db:push": "prisma db push",
     "db:generate": "prisma generate"
   },

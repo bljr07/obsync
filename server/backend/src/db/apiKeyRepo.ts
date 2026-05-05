@@ -48,3 +48,19 @@ export async function revokeApiKey(vaultId: string, id: string) {
     data: { revokedAt: new Date() }
   });
 }
+
+export async function findActiveApiKeyByHash(keyHash: string) {
+  return prisma.vaultApiKey.findFirst({
+    where: {
+      keyHash,
+      revokedAt: null
+    }
+  });
+}
+
+export async function touchApiKeyLastUsed(id: string) {
+  return prisma.vaultApiKey.update({
+    where: { id },
+    data: { lastUsedAt: new Date() }
+  });
+}

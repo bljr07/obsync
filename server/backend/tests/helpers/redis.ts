@@ -1,4 +1,5 @@
 import { createRedisClient } from "../../src/redis/client.js";
+import { resetRedisStore } from "./memoryStore.js";
 
 const CONNECT_TIMEOUT_MS = 5000;
 
@@ -12,7 +13,8 @@ async function connectWithTimeout(client: { connect: () => Promise<void> }) {
 }
 
 export async function purgeRedis(prefix = "obsync:") {
-  const client = createRedisClient();
+  await resetRedisStore(prefix);
+  const client = createRedisClient() as any;
   await connectWithTimeout(client);
 
   if (prefix === "obsync:") {

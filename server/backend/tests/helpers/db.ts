@@ -1,17 +1,27 @@
-import { PrismaClient } from "@prisma/client";
+import {
+  disconnectMemoryStore,
+  resetMemoryStore,
+  updateMemoryConflicts,
+  updateMemoryVersions
+} from "./memoryStore.js";
 
-export const prisma = new PrismaClient();
+export const prisma = {
+  vaultEntryVersion: {
+    async updateMany(options: { data: { createdAt?: Date } }) {
+      return updateMemoryVersions(options.data);
+    }
+  },
+  vaultConflict: {
+    async updateMany(options: { data: { createdAt?: Date } }) {
+      return updateMemoryConflicts(options.data);
+    }
+  }
+};
 
 export async function resetDatabase() {
-  await prisma.user.deleteMany();
-  await prisma.vaultApiKey.deleteMany();
-  await prisma.vaultSettings.deleteMany();
-  await prisma.vaultConflict.deleteMany();
-  await prisma.vaultEntryVersion.deleteMany();
-  await prisma.vaultEntry.deleteMany();
-  await prisma.vaultSyncLog.deleteMany();
+  await resetMemoryStore();
 }
 
 export async function disconnectDatabase() {
-  await prisma.$disconnect();
+  await disconnectMemoryStore();
 }

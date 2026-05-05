@@ -38,7 +38,7 @@ export async function startTestServer() {
     }
   });
 
-  const redis = createRedisClient();
+  const redis = createRedisClient() as any;
   await connectWithTimeout(redis);
 
   registerSocketHandlers(io, redis);

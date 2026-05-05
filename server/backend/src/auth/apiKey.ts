@@ -1,7 +1,5 @@
 import { createHash, randomBytes } from "crypto";
-import { getPrismaClient } from "../db/prisma.js";
-
-const prisma = getPrismaClient();
+import { findActiveApiKeyByHash, touchApiKeyLastUsed } from "../db/apiKeyRepo.js";
 
 export function generateApiKey() {
   const raw = randomBytes(32).toString("base64url");
@@ -15,21 +13,12 @@ export function hashApiKey(apiKey: string) {
 export async function verifyApiKey(apiKey: string) {
   const keyHash = hashApiKey(apiKey);
 
-  const record = await prisma.vaultApiKey.findFirst({
-    where: {
-      keyHash,
-      revokedAt: null
-    }
-  });
-
+  const record = await findActiveApiKeyByHash(keyHash);
   if (!record) {
     throw new Error("API key not found");
   }
 
-  await prisma.vaultApiKey.update({
-    where: { id: record.id },
-    data: { lastUsedAt: new Date() }
-  });
+  await touchApiKeyLastUsed(record.id);
 
   return {
     vaultId: record.vaultId,

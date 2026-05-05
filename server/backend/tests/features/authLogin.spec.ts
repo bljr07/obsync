@@ -8,7 +8,7 @@ import { hashPassword } from "../../src/auth/password.js";
 import { ensureBootstrapAdmin } from "../../src/auth/bootstrap.js";
 
 function extractCookie(res: request.Response) {
-  const setCookie = res.headers["set-cookie"] as string[] | undefined;
+  const setCookie = res.headers["set-cookie"] as unknown as string[] | undefined;
   expect(setCookie?.length).toBeTruthy();
   return setCookie?.[0].split(";")[0] ?? "";
 }

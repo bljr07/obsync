@@ -1,22 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const prismaMock = vi.hoisted(() => ({
-  vaultApiKey: {
-    findFirst: vi.fn(),
-    update: vi.fn()
-  }
+  findActiveApiKeyByHash: vi.fn(),
+  touchApiKeyLastUsed: vi.fn()
 }));
 
-vi.mock("../../src/db/prisma.js", () => ({
-  getPrismaClient: () => prismaMock
-}));
+vi.mock("../../src/db/apiKeyRepo.js", () => prismaMock);
 
 import { generateApiKey, hashApiKey, verifyApiKey } from "../../src/auth/apiKey.js";
 
 describe("api key auth", () => {
   beforeEach(() => {
-    prismaMock.vaultApiKey.findFirst.mockReset();
-    prismaMock.vaultApiKey.update.mockReset();
+    prismaMock.findActiveApiKeyByHash.mockReset();
+    prismaMock.touchApiKeyLastUsed.mockReset();
   });
 
   it("generates api key with prefix", () => {
@@ -31,12 +27,12 @@ describe("api key auth", () => {
   });
 
   it("verifies api keys and updates last used", async () => {
-    prismaMock.vaultApiKey.findFirst.mockResolvedValue({
+    prismaMock.findActiveApiKeyByHash.mockResolvedValue({
       id: "key-1",
       vaultId: "vault-1",
       role: "client"
     });
-    prismaMock.vaultApiKey.update.mockResolvedValue({});
+    prismaMock.touchApiKeyLastUsed.mockResolvedValue({});
 
     const result = await verifyApiKey("obsync_token");
 
@@ -46,14 +42,11 @@ describe("api key auth", () => {
       apiKeyId: "key-1"
     });
 
-    expect(prismaMock.vaultApiKey.update).toHaveBeenCalledWith({
-      where: { id: "key-1" },
-      data: { lastUsedAt: expect.any(Date) }
-    });
+    expect(prismaMock.touchApiKeyLastUsed).toHaveBeenCalledWith("key-1");
   });
 
   it("rejects missing api keys", async () => {
-    prismaMock.vaultApiKey.findFirst.mockResolvedValue(null);
+    prismaMock.findActiveApiKeyByHash.mockResolvedValue(null);
 
     await expect(verifyApiKey("missing")).rejects.toThrow("API key not found");
   });
