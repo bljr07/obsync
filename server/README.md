@@ -41,6 +41,16 @@ npm run dev
 npm test
 ```
 
+`npm test` uses in-memory fakes for Postgres and Redis. To run the backend
+against real Docker Compose infrastructure:
+
+```
+npm run test:e2e:docker
+```
+
+This starts isolated Postgres and Redis E2E services, pushes the Prisma schema,
+runs `tests/e2e`, and tears the services down.
+
 ## Frontend (server/frontend)
 1) Install and run:
 

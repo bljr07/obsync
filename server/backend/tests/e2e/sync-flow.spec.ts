@@ -1,10 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import request from "supertest";
 import { io as createClient } from "socket.io-client";
-import { startTestServer, stopTestServer } from "../helpers/server.js";
+import { startTestServer, stopTestServer } from "./helpers/server.js";
 import { createTestToken, testPublicKey } from "../helpers/testKeys.js";
-import { disconnectDatabase, resetDatabase } from "../helpers/db.js";
-import { purgeRedis } from "../helpers/redis.js";
+import { disconnectDatabase, resetDatabase } from "./helpers/db.js";
+import { purgeRedis } from "./helpers/redis.js";
 import { sha256 } from "../helpers/hash.js";
 
 const socketOptions = {
@@ -32,7 +32,9 @@ describe.sequential("End-to-end sync flow", () => {
   });
 
   afterAll(async () => {
-    await stopTestServer(server);
+    if (server) {
+      await stopTestServer(server);
+    }
     await disconnectDatabase();
   });
 
