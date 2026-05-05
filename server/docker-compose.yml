@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - ./.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U obsync -d obsync"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - obsync
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - obsync
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    environment:
+      DATABASE_URL: postgresql://obsync:obsync@postgres:5432/obsync
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - obsync
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - obsync
+  
+networks:
+  obsync:
+    driver: bridge
+
+volumes:
+  pgdata:
